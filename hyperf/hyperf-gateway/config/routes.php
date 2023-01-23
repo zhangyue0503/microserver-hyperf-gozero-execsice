@@ -21,6 +21,8 @@ Router::get('/cb1', 'App\Controller\IndexController@cb1');
 Router::get('/rl1', 'App\Controller\IndexController@rl1');
 Router::get('/rl2', 'App\Controller\IndexController@rl2');
 
+Router::get('/grpc', 'App\Controller\IndexController@grpc');
+
 Router::get('/favicon.ico', function () {
     return '';
 });

@@ -14,8 +14,11 @@ namespace App\Controller;
 use App\JsonRpc\CalculatorServiceInterface;
 use App\JsonRpc\HyperfHelloAInterface;
 use App\Service\TestService;
+use G\User\IdReq;
+use G\User\UserInfoReply;
 use Hyperf\CircuitBreaker\Annotation\CircuitBreaker;
 use Hyperf\Di\Aop\ProceedingJoinPoint;
+use Hyperf\GrpcClient\BaseClient;
 use Hyperf\RateLimit\Annotation\RateLimit;
 use Hyperf\Retry\Annotation\Retry;
 use Hyperf\Retry\Annotation\RetryFalsy;
@@ -119,4 +122,26 @@ class IndexController extends AbstractController
         return $proceedingJoinPoint->process();
     }
 
+    public function grpc(){
+        $client = new UserClient('127.0.0.1:8080', [
+            'credentials' => null,
+        ]);
+        $u = new IdReq();
+        $u->setId(1);
+        [$reply, $status] = $client->getUser($u);
+        return $reply;
+    }
+
+}
+
+class UserClient extends BaseClient
+{
+    public function getUser(IdReq $argument)
+    {
+        return $this->_simpleRequest(
+            '/user.User/getUser',
+            $argument,
+            [UserInfoReply::class, 'decode']
+        );
+    }
 }
